@@ -27,8 +27,7 @@ to each [GitHub Release](https://github.com/QuverLabs/playwright-node-php/releas
 
 ## Quick start
 
-The first release is pending. Until then, [build the image locally](#build-and-test-locally).
-Once it is published, pull the image:
+Pull the image:
 
 ```sh
 docker pull ghcr.io/quverlabs/playwright-node-php:v1.64.1
@@ -137,7 +136,9 @@ npm run build -- --platform linux/arm64
 
 The smoke test starts a PHP server and checks page rendering and JavaScript in
 all three browsers. External networking is disabled to ensure the browsers work
-without downloads. CI runs the same checks on native AMD64 and ARM64 runners.
+without downloads. CI runs the same checks on Ubuntu 24.04 and 26.04, using native
+AMD64 and ARM64 runners. Release builds use Ubuntu 26.04 runners; the container
+itself runs Debian 13.
 
 ## Publishing
 

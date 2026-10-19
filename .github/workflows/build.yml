@@ -5,18 +5,18 @@ on:
       publish:
         type: boolean
         default: false
+      ubuntu-version:
+        type: string
+        default: '26.04'
 
 jobs:
   build:
+    name: Build (${{ matrix.arch }}, Ubuntu ${{ inputs.ubuntu-version }})
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - arch: amd64
-            runner: ubuntu-24.04
-          - arch: arm64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
+        arch: [amd64, arm64]
+    runs-on: ${{ format('ubuntu-{0}{1}', inputs.ubuntu-version, matrix.arch == 'arm64' && '-arm' || '') }}
     timeout-minutes: 45
     env:
       IMAGE: playwright-node-php:test
@@ -58,7 +58,7 @@ jobs:
           mv "reports/$ARCH.tmp" "reports/$ARCH.json"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: versions-${{ matrix.arch }}
+          name: versions-${{ inputs.ubuntu-version }}-${{ matrix.arch }}
           path: reports/${{ matrix.arch }}.json
           if-no-files-found: error
           retention-days: 30

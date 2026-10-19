@@ -19,7 +19,8 @@ Examples should work without private services or credentials.
    any compatibility changes in the pull request.
 5. Run `npm test`, `npm run build`, `npm run test:image`,
    `shellcheck scripts/*.sh` and `actionlint .github/workflows/*.yml`.
-6. Require the CI smoke tests on both native architectures before releasing.
+6. Require the CI smoke tests on Ubuntu 24.04 and 26.04 for both native
+   architectures before releasing.
 
 ## Repository setup
 
@@ -54,7 +55,7 @@ Replace the example tag with the version you are releasing. Pushing a `v*` tag
 starts the release workflow:
 
 1. Validate the tag against the pinned Playwright version.
-2. Build and run offline smoke tests on native AMD64 and ARM64 runners.
+2. Build and run offline smoke tests on native Ubuntu 26.04 AMD64 and ARM64 runners.
 3. Push the tested images under temporary `build-*` tags.
 4. Validate both version reports and check that the release tag is unused in GHCR.
 5. Publish a combined image manifest and create a GitHub Release with version

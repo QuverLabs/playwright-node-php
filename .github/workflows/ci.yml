@@ -14,4 +14,10 @@ concurrency:
 
 jobs:
   test:
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu-version: ['24.04', '26.04']
     uses: ./.github/workflows/build.yml
+    with:
+      ubuntu-version: ${{ matrix.ubuntu-version }}
