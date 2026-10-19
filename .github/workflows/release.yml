@@ -1,0 +1,86 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+# Serialize all releases and refuse existing tags before publishing.
+concurrency:
+  group: image-release
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26.12.0'
+      - run: node scripts/release.mjs validate "$GITHUB_REF_NAME"
+
+  build:
+    needs: validate
+    uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      publish: true
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      packages: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26.12.0'
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: versions-*
+          path: reports
+          merge-multiple: true
+      - name: Validate reports and publish the multi-platform manifest
+        run: |
+          registry="ghcr.io/${GITHUB_REPOSITORY,,}"
+          amd64="$(jq -r .digest reports/amd64.json)"
+          arm64="$(jq -r .digest reports/arm64.json)"
+          # Validate all version reports before exposing the release tag.
+          node scripts/release.mjs notes "$GITHUB_REF_NAME" "$registry" "$amd64" reports/amd64.json reports/arm64.json > /dev/null
+          bash scripts/assert-tag-available.sh "$registry:$GITHUB_REF_NAME"
+          docker buildx imagetools create --tag "$registry:$GITHUB_REF_NAME" "$registry@$amd64" "$registry@$arm64"
+          docker buildx imagetools inspect "$registry:$GITHUB_REF_NAME" --raw > reports/manifest.json
+          jq -e '[.manifests[].platform | .os + "/" + .architecture] | sort == ["linux/amd64", "linux/arm64"]' reports/manifest.json
+          digest="$(docker buildx imagetools inspect "$registry:$GITHUB_REF_NAME" --format '{{.Manifest.Digest}}')"
+          node scripts/release.mjs notes "$GITHUB_REF_NAME" "$registry" "$digest" reports/amd64.json reports/arm64.json > reports/release.md
+          cat reports/release.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve release metadata for recovery
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-metadata
+          path: reports/
+          retention-days: 90
+      - name: Create GitHub Release
+        run: |
+          gh release create "$GITHUB_REF_NAME" --verify-tag \
+            --title "$GITHUB_REF_NAME" --notes-file reports/release.md \
+            reports/amd64.json reports/arm64.json reports/manifest.json

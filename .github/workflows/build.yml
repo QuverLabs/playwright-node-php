@@ -1,0 +1,64 @@
+name: Build and test
+on:
+  workflow_call:
+    inputs:
+      publish:
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    env:
+      IMAGE: playwright-node-php:test
+      ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26.12.0'
+      - name: Test release tooling
+        run: npm test
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build
+        env:
+          IMAGE_VERSION: ${{ github.ref_name }}
+          SOURCE_REVISION: ${{ github.sha }}
+        run: bash scripts/build.sh --platform "linux/$ARCH"
+      - name: Test installed browsers and record actual versions
+        run: |
+          mkdir -p reports
+          bash scripts/test-image.sh > "reports/$ARCH.json"
+          jq -e --arg arch "$ARCH" '.architecture == $arch' "reports/$ARCH.json"
+      - name: Log in to GHCR
+        if: inputs.publish
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push the exact tested image under a temporary tag
+        if: inputs.publish
+        run: |
+          registry="ghcr.io/${GITHUB_REPOSITORY,,}"
+          candidate="$registry:build-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$ARCH"
+          docker tag "$IMAGE" "$candidate"
+          docker push "$candidate"
+          digest="$(docker buildx imagetools inspect "$candidate" --format '{{.Manifest.Digest}}')"
+          jq --arg digest "$digest" '. + {digest: $digest}' "reports/$ARCH.json" > "reports/$ARCH.tmp"
+          mv "reports/$ARCH.tmp" "reports/$ARCH.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: versions-${{ matrix.arch }}
+          path: reports/${{ matrix.arch }}.json
+          if-no-files-found: error
+          retention-days: 30
