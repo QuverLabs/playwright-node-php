@@ -11,13 +11,13 @@ Microsoft.
 
 ## Included software
 
-Versions pinned in the source, updated on 2026-10-19:
+Versions pinned in the source, updated on 2026-11-02:
 
 | Component | Pinned version |
 | --- | --- |
 | Playwright | 1.64.1 |
-| Node.js | 26.12.0 (Current) |
-| PHP CLI | 8.5.11 |
+| Node.js | 26.13.0 (Current) |
+| PHP CLI | 8.5.12 |
 | Operating system | Debian 13 (Trixie) |
 | Platforms | `linux/amd64`, `linux/arm64` |
 
