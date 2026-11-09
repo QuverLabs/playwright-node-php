@@ -91,10 +91,13 @@ other engines may need additional networking configuration. Inside the container
 | --- | --- |
 | `v1.65.0` | First image release for Playwright 1.65.0 |
 | `v1.65.0-r2`, `v1.65.0-r3` | Subsequent releases with the same Playwright version |
-| `v1.66.0` | First image release for a new Playwright version; the revision counter resets |
 
-Revisions start at `r2`. Any release may update Node.js, PHP, system packages or
-build scripts, so check the release notes before upgrading. Node.js and PHP major
+The first image for a Playwright version has no revision suffix; later images
+for that same version use `-r2`, `-r3`, and so on. When Playwright is upgraded,
+the first image for the new version again has no revision suffix.
+
+Any release may update Node.js, PHP, system packages or build scripts, so check
+the release notes before upgrading. Node.js and PHP major
 versions can change even when the Playwright version stays the same.
 
 Releases use the latest stable components, including Node.js Current rather than
