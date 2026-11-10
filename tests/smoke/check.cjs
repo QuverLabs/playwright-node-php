@@ -9,10 +9,12 @@ const version = imageRequire('playwright-core/package.json').version;
 
 async function main() {
   const php = execFileSync('php', ['-r', 'echo PHP_VERSION;'], { encoding: 'utf8' }).trim();
+  const composer = execFileSync('composer', ['--version', '--no-ansi'], { encoding: 'utf8' }).match(/Composer version (\d+\.\d+\.\d+)/)?.[1];
   const dockerfile = readFileSync('/expected-Dockerfile', 'utf8');
   const expectedPackage = JSON.parse(readFileSync('/expected-package.json', 'utf8'));
   assert.equal(process.versions.node, dockerfile.match(/^FROM node:([\d.]+)-/m)?.[1], 'Node version must match its base-image tag');
   assert.equal(php, dockerfile.match(/^FROM php:([\d.]+)-/m)?.[1], 'PHP version must match its base-image tag');
+  assert.equal(composer, dockerfile.match(/getcomposer\.org\/download\/([\d.]+)\/composer\.phar/)?.[1], 'Composer version must match its source pin');
   assert.equal(version, expectedPackage.dependencies['playwright-core'], 'Playwright version must match the source pin');
   const server = spawn('php', ['-S', '127.0.0.1:8080', '-t', '/smoke'], { stdio: 'ignore' });
   server.on('error', (error) => { console.error(error); process.exitCode = 1; });

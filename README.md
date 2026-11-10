@@ -18,6 +18,7 @@ Versions pinned in the source, updated on 2026-11-09:
 | Playwright | 1.65.0 |
 | Node.js | 26.13.0 (Current) |
 | PHP CLI | 8.5.12 |
+| Composer | 2.11.2 |
 | Operating system | Debian 13 (Trixie) |
 | Platforms | `linux/amd64`, `linux/arm64` |
 
@@ -61,7 +62,7 @@ Your project needs its own `@playwright/test` dependency; there is no global
 `playwright` command. Keep `PLAYWRIGHT_BROWSERS_PATH=/ms-playwright` to use the
 preinstalled browsers without downloading them again.
 
-To add PHP extensions, Composer or application dependencies, extend the image
+To add PHP extensions or application dependencies, extend the image
 with your own Dockerfile. See [examples/Dockerfile](examples/Dockerfile)
 and [examples/github-actions.yml](examples/github-actions.yml).
 

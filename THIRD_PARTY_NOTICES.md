@@ -9,6 +9,7 @@ as recorded in the OCI license label. Bundled software retains its own licenses.
 | Node.js | [MIT and bundled third-party notices](https://github.com/nodejs/node/blob/main/LICENSE); [official image](https://github.com/nodejs/docker-node) |
 | npm | [Artistic-2.0 and dependency licenses](https://github.com/npm/cli/blob/latest/LICENSE) |
 | PHP | [PHP license and bundled notices](https://www.php.net/license/); [official image](https://github.com/docker-library/php) |
+| Composer | [MIT license](https://github.com/composer/composer/blob/main/LICENSE) |
 | Debian and system packages | Individual package licenses; [Debian copyright information](https://www.debian.org/legal/licenses/) |
 | Chromium | [Chromium licenses](https://www.chromium.org/chromium-os/licenses/), including bundled third-party components |
 | Firefox | [Mozilla licensing](https://www.mozilla.org/en-US/about/legal/terms/mozilla/) and [source](https://firefox-source-docs.mozilla.org/) |
