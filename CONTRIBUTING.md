@@ -5,6 +5,28 @@ Examples should work without private services or credentials.
 
 ## Updating components
 
+For a Dependabot Playwright PR, after this workflow has been merged to the default
+branch, run **Actions → Sync Playwright documentation → Run workflow** from the
+default branch and enter the Dependabot branch name. It updates the README and
+pushes a commit using `GITHUB_TOKEN`; no GitHub App or personal token is needed.
+Review the result in the PR. This edits the Dependabot branch, so Dependabot may
+stop automatically rebasing it. The workflow does not publish a release.
+
+The bot commit does not normally trigger PR CI. To run CI on that commit, use
+**Actions → CI → Run workflow** and select the updated branch. A manual run may
+not satisfy required PR checks; if required checks remain pending or refer to the
+old commit, push an empty commit yourself to the branch to trigger PR CI:
+
+```sh
+git switch <dependabot-branch>
+git pull --ff-only
+git commit --allow-empty -m 'Trigger CI'
+git push origin HEAD
+```
+
+The sync workflow requires Actions to have permission to write repository
+contents. It supports Playwright documentation only; review other updates manually.
+
 1. Check the current stable releases from npm (`npm view playwright version`),
    [Node.js](https://nodejs.org/en/download) and
    [PHP](https://www.php.net/downloads.php). Use Node.js Current and exclude
