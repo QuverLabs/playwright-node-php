@@ -11,11 +11,11 @@ Microsoft.
 
 ## Included software
 
-Versions pinned in the source, updated on 2026-11-02:
+Versions pinned in the source, updated on 2026-11-09:
 
 | Component | Pinned version |
 | --- | --- |
-| Playwright | 1.64.1 |
+| Playwright | 1.65.0 |
 | Node.js | 26.13.0 (Current) |
 | PHP CLI | 8.5.12 |
 | Operating system | Debian 13 (Trixie) |
@@ -30,14 +30,14 @@ to each [GitHub Release](https://github.com/QuverLabs/playwright-node-php/releas
 Pull the image:
 
 ```sh
-docker pull ghcr.io/quverlabs/playwright-node-php:v1.64.1
+docker pull ghcr.io/quverlabs/playwright-node-php:v1.65.0
 ```
 
 In your project, install the matching Playwright version and commit
 your lockfile:
 
 ```sh
-npm install --save-dev --save-exact @playwright/test@1.64.1
+npm install --save-dev --save-exact @playwright/test@1.65.0
 ```
 
 Run your project's tests from its root directory:
@@ -47,7 +47,7 @@ docker run --rm --init --ipc=host \
   --volume "$PWD:/work" \
   --volume /work/node_modules \
   --workdir /work \
-  ghcr.io/quverlabs/playwright-node-php:v1.64.1 \
+  ghcr.io/quverlabs/playwright-node-php:v1.65.0 \
   sh -c 'npm ci && npx --no-install playwright test'
 ```
 
@@ -89,12 +89,15 @@ other engines may need additional networking configuration. Inside the container
 
 | Tag | Meaning |
 | --- | --- |
-| `v1.64.1` | First image release for Playwright 1.64.1 |
-| `v1.64.1-r2`, `v1.64.1-r3` | Subsequent releases with the same Playwright version |
-| `v1.65.0` | First image release for a new Playwright version; the revision counter resets |
+| `v1.65.0` | First image release for Playwright 1.65.0 |
+| `v1.65.0-r2`, `v1.65.0-r3` | Subsequent releases with the same Playwright version |
 
-Revisions start at `r2`. Any release may update Node.js, PHP, system packages or
-build scripts, so check the release notes before upgrading. Node.js and PHP major
+The first image for a Playwright version has no revision suffix; later images
+for that same version use `-r2`, `-r3`, and so on. When Playwright is upgraded,
+the first image for the new version again has no revision suffix.
+
+Any release may update Node.js, PHP, system packages or build scripts, so check
+the release notes before upgrading. Node.js and PHP major
 versions can change even when the Playwright version stays the same.
 
 Releases use the latest stable components, including Node.js Current rather than
