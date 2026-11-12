@@ -48,7 +48,7 @@ async function main() {
     assert.ok(architecture, `Unsupported architecture: ${process.arch}`);
     console.log(JSON.stringify({
       architecture, playwright: version, node: process.versions.node,
-      npm: execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim(), php, os, browsers,
+      npm: execFileSync('npm', ['--version'], { encoding: 'utf8' }).trim(), php, composer, os, browsers,
       phpExtensions: JSON.parse(execFileSync('php', ['-r', 'echo json_encode(get_loaded_extensions());'], { encoding: 'utf8' })).sort(),
     }, null, 2));
   } finally { server.kill('SIGTERM'); }

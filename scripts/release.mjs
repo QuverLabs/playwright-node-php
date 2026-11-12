@@ -15,7 +15,7 @@ export function validateReports(reports, playwright) {
   for (const report of reports) {
     assert.equal(report.playwright, playwright, 'Tested Playwright must match the release');
     assert.match(report.digest, /^sha256:[a-f0-9]{64}$/);
-    for (const field of ['node', 'npm', 'php', 'os']) {
+    for (const field of ['node', 'npm', 'php', 'composer', 'os']) {
       assert.ok(typeof report[field] === 'string' && report[field].length > 0, `Missing ${field}`);
       assert.equal(report[field], reports[0][field], `Architectures disagree on ${field}`);
     }
@@ -40,7 +40,7 @@ Playwright browsers with Node.js and PHP CLI. Both architectures passed offline 
 
 | Component | linux/amd64 | linux/arm64 |
 | --- | --- | --- |
-${['playwright', 'node', 'npm', 'php', 'os'].map((key) => `| ${key} | ${ordered[0][key]} | ${ordered[1][key]} |`).join('\n')}
+${['playwright', 'node', 'npm', 'php', 'composer', 'os'].map((key) => `| ${key} | ${ordered[0][key]} | ${ordered[1][key]} |`).join('\n')}
 ${['chromium', 'firefox', 'webkit'].map((key) => `| ${key} | ${ordered[0].browsers[key]} | ${ordered[1].browsers[key]} |`).join('\n')}
 
 ## Usage
