@@ -5,7 +5,7 @@ import { validateTag, validateReports, releaseNotes } from '../../scripts/releas
 const digest = `sha256:${'a'.repeat(64)}`;
 const report = (architecture) => ({
   architecture, playwright: '1.64.1', node: '26.12.0', npm: '11.9.0',
-  php: '8.5.11', os: 'Debian GNU/Linux 13 (trixie)',
+  php: '8.5.11', composer: '2.11.2', os: 'Debian GNU/Linux 13 (trixie)',
   browsers: { chromium: '145.0', firefox: '147.0', webkit: '26.0' },
   phpExtensions: ['Core', 'json'], digest,
 });
@@ -30,6 +30,8 @@ test('requires one tested report for each architecture', () => {
   assert.throws(() => validateReports([reports[0], reports[0]], '1.64.1'));
   assert.throws(() => validateReports(reports, '1.65.0'));
   assert.throws(() => validateReports([reports[0], { ...reports[1], node: '24.0.0' }], '1.64.1'));
+  assert.throws(() => validateReports([reports[0], { ...reports[1], composer: undefined }], '1.64.1'));
+  assert.throws(() => validateReports([reports[0], { ...reports[1], composer: '2.11.1' }], '1.64.1'));
   assert.throws(() => validateReports([reports[0], { ...reports[1], digest: '' }], '1.64.1'));
   assert.throws(() => validateReports([reports[0], { ...reports[1], browsers: {} }], '1.64.1'));
 });
@@ -41,4 +43,5 @@ test('release notes use observed versions, both platforms and immutable referenc
     'linux/amd64', 'linux/arm64', '145.1', `ghcr.io/example/image@${digest}`, 'Core, json']) {
     assert.ok(notes.includes(value), `Missing ${value}`);
   }
+  assert.match(notes, /\| composer \| 2\.11\.2 \| 2\.11\.2 \|/);
 });
