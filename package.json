@@ -9,5 +9,5 @@
     "test:image": "bash scripts/test-image.sh"
   },
   "engines": { "node": ">=26" },
-  "dependencies": { "playwright-core": "1.65.0" }
+  "dependencies": { "playwright-core": "1.65.1" }
 }
