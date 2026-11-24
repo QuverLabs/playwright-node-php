@@ -29,8 +29,8 @@ contents. It supports Playwright documentation only; review other updates manual
 
 1. Check the current stable releases from npm (`npm view playwright version`),
    [Node.js](https://nodejs.org/en/download) and
-   [PHP](https://www.php.net/downloads.php). Use Node.js Current and exclude
-   prereleases, as described in the README's version policy.
+   [PHP](https://www.php.net/downloads.php). Use the latest stable Node.js version and exclude prereleases, as described
+   in the README's version policy.
 2. Update the exact `playwright-core` dependency and its lockfile with
    `npm install --save-exact --ignore-scripts playwright-core@VERSION`.
 3. Update the Node.js and PHP image tags and **multi-platform index digests** in
